@@ -15,6 +15,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Xml;
+using SAML2.Schema.XmlDSig;
 
 namespace SAML2.Protocol
 {
@@ -40,15 +41,31 @@ namespace SAML2.Protocol
         /// <returns>List of trusted certificate signers.</returns>
         public static IEnumerable<AsymmetricAlgorithm> GetTrustedSigners(ICollection<KeyDescriptor> keys, IdentityProvider identityProvider)
         {
-            if (keys == null) {
+            if (keys == null)
+            {
                 throw new ArgumentNullException("keys");
             }
 
-            foreach (var clause in keys.SelectMany(k => k.KeyInfo.Items.AsEnumerable().Cast<KeyInfoClause>())) {
+            var keyClauses = keys.SelectMany(x => x.KeyInfo.Items).OfType<X509Data>().SelectMany(x => x.Items).OfType<byte[]>().ToList();
+
+            foreach (var keyClause in keyClauses)
+            {
+                var cert = new X509Certificate2(keyClause);
+                if (CertificateSatisfiesSpecifications(identityProvider, cert))
+                {
+                    yield return cert.PublicKey.Key;
+                }
+
+            }
+
+            foreach (var clause in keys.SelectMany(k => k.KeyInfo.Items.AsEnumerable().OfType<KeyInfoClause>()))
+            {
                 // Check certificate specifications
-                if (clause is KeyInfoX509Data) {
+                if (clause is KeyInfoX509Data)
+                {
                     var cert = XmlSignatureUtils.GetCertificateFromKeyInfo((KeyInfoX509Data)clause);
-                    if (!CertificateSatisfiesSpecifications(identityProvider, cert)) {
+                    if (!CertificateSatisfiesSpecifications(identityProvider, cert))
+                    {
                         continue;
                     }
                 }
@@ -78,7 +95,8 @@ namespace SAML2.Protocol
         {
             var result = string.Empty;
             var list = assertion.GetElementsByTagName("Issuer", Saml20Constants.Assertion);
-            if (list.Count > 0) {
+            if (list.Count > 0)
+            {
                 var issuer = (XmlElement)list[0];
                 result = issuer.InnerText;
             }
@@ -97,7 +115,8 @@ namespace SAML2.Protocol
             logger.Debug(TraceMessages.AssertionParse);
 
             var encryptedList = el.GetElementsByTagName(EncryptedAssertion.ElementName, Saml20Constants.Assertion);
-            if (encryptedList.Count == 1) {
+            if (encryptedList.Count == 1)
+            {
                 isEncrypted = true;
                 var encryptedAssertion = (XmlElement)encryptedList[0];
 
@@ -107,7 +126,8 @@ namespace SAML2.Protocol
             }
 
             var assertionList = el.GetElementsByTagName(Assertion.ElementName, Saml20Constants.Assertion);
-            if (assertionList.Count == 1) {
+            if (assertionList.Count == 1)
+            {
                 isEncrypted = false;
                 var assertion = (XmlElement)assertionList[0];
 
@@ -138,9 +158,11 @@ namespace SAML2.Protocol
         {
             logger.DebugFormat(TraceMessages.AssertionPrehandlerCalled);
 
-            if (endpoint != null && endpoint.Endpoints.DefaultLogoutEndpoint != null && !string.IsNullOrEmpty(endpoint.Endpoints.DefaultLogoutEndpoint.TokenAccessor)) {
+            if (endpoint != null && endpoint.Endpoints.DefaultLogoutEndpoint != null && !string.IsNullOrEmpty(endpoint.Endpoints.DefaultLogoutEndpoint.TokenAccessor))
+            {
                 var idpTokenAccessor = Activator.CreateInstance(Type.GetType(endpoint.Endpoints.DefaultLogoutEndpoint.TokenAccessor, false)) as ISaml20IdpTokenAccessor;
-                if (idpTokenAccessor != null) {
+                if (idpTokenAccessor != null)
+                {
                     logger.DebugFormat("{0}.{1} called", idpTokenAccessor.GetType(), "ReadToken");
                     idpTokenAccessor.ReadToken(elem);
                     logger.DebugFormat("{0}.{1} finished", idpTokenAccessor.GetType(), "ReadToken");
@@ -207,30 +229,39 @@ namespace SAML2.Protocol
             logger.Debug(TraceMessages.ReplayAttackCheck);
 
             var inResponseToAttribute = element.Attributes["InResponseTo"];
-            if (!requireInResponseTo && inResponseToAttribute == null) {
+            if (!requireInResponseTo && inResponseToAttribute == null)
+            {
                 return;
             }
-            if (inResponseToAttribute == null) {
+            if (inResponseToAttribute == null)
+            {
                 throw new Saml20Exception(ErrorMessages.ResponseMissingInResponseToAttribute);
             }
 
             var inResponseTo = inResponseToAttribute.Value;
-            if (string.IsNullOrEmpty(inResponseTo)) {
+            if (string.IsNullOrEmpty(inResponseTo))
+            {
                 throw new Saml20Exception(ErrorMessages.ExpectedInResponseToEmpty);
             }
 
-            if (session != null) {
-                if (!session.ContainsKey(ExpectedInResponseToSessionKey)) {
+            if (session != null)
+            {
+                if (!session.ContainsKey(ExpectedInResponseToSessionKey))
+                {
                     throw new Saml20Exception(ErrorMessages.ExpectedInResponseToMissing);
                 }
                 var expectedInResponseTo = (string)session[ExpectedInResponseToSessionKey];
 
-                if (inResponseTo != expectedInResponseTo) {
+                if (inResponseTo != expectedInResponseTo)
+                {
                     logger.ErrorFormat(ErrorMessages.ReplayAttack, inResponseTo, expectedInResponseTo);
                     throw new Saml20Exception(string.Format(ErrorMessages.ReplayAttack, inResponseTo, expectedInResponseTo));
                 }
-            } else {
-                if (!expectedResponses.Contains(inResponseTo)) {
+            }
+            else
+            {
+                if (!expectedResponses.Contains(inResponseTo))
+                {
                     throw new Saml20Exception(ErrorMessages.ExpectedInResponseToMissing);
                 }
                 expectedResponses.Remove(inResponseTo);
@@ -241,9 +272,12 @@ namespace SAML2.Protocol
         public static void AddExpectedResponse(Saml20AuthnRequest request, IDictionary<string, object> session)
         {
             // Save request message id to session
-            if (session != null) {
+            if (session != null)
+            {
                 session.Add(ExpectedInResponseToSessionKey, request.Id);
-            } else {
+            }
+            else
+            {
                 expectedResponses.Add(request.Id);
             }
         }
@@ -262,7 +296,8 @@ namespace SAML2.Protocol
 
             PreHandleAssertion(elem, endp);
 
-            if (endp == null || endp.Metadata == null) {
+            if (endp == null || endp.Metadata == null)
+            {
                 logger.Error(ErrorMessages.AssertionIdentityProviderUnknown);
                 throw new Saml20Exception(ErrorMessages.AssertionIdentityProviderUnknown);
             }
@@ -271,22 +306,29 @@ namespace SAML2.Protocol
             var assertion = new Saml20Assertion(elem, null, quirksMode, config);
 
             // Check signatures
-            if (!endp.OmitAssertionSignatureCheck) {
-                if (!assertion.CheckSignature(GetTrustedSigners(endp.Metadata.GetKeys(KeyTypes.Signing), endp))) {
+            if (!endp.OmitAssertionSignatureCheck)
+            {
+                var document = elem.OwnerDocument;
+
+                if (!XmlSignatureUtils.CheckSignature(document))
+                {
                     logger.Error(ErrorMessages.AssertionSignatureInvalid);
                     throw new Saml20Exception(ErrorMessages.AssertionSignatureInvalid);
                 }
             }
 
             // Check expiration
-            if (assertion.IsExpired) {
+            if (assertion.IsExpired)
+            {
                 logger.Error(ErrorMessages.AssertionExpired);
                 throw new Saml20Exception(ErrorMessages.AssertionExpired);
             }
 
             // Check one time use
-            if (assertion.IsOneTimeUse) {
-                if (getFromCache(assertion.Id) != null) {
+            if (assertion.IsOneTimeUse)
+            {
+                if (getFromCache(assertion.Id) != null)
+                {
                     logger.Error(ErrorMessages.AssertionOneTimeUseExceeded);
                     throw new Saml20Exception(ErrorMessages.AssertionOneTimeUseExceeded);
                 }
@@ -318,43 +360,52 @@ namespace SAML2.Protocol
             var parser = new HttpArtifactBindingParser(inputStream);
             logger.DebugFormat(TraceMessages.SOAPMessageParse, parser.SamlMessage.OuterXml);
 
-            if (parser.IsArtifactResolve) {
+            if (parser.IsArtifactResolve)
+            {
                 logger.Debug(TraceMessages.ArtifactResolveReceived);
 
                 var idp = IdpSelectionUtil.RetrieveIDPConfiguration(parser.Issuer, config);
-                if (!parser.CheckSamlMessageSignature(idp.Metadata.Keys)) {
+                if (!parser.CheckSamlMessageSignature(idp.Metadata.Keys))
+                {
                     logger.Error(ErrorMessages.ArtifactResolveSignatureInvalid);
                     throw new Saml20Exception(ErrorMessages.ArtifactResolveSignatureInvalid);
                 }
 
                 builder.RespondToArtifactResolve(parser.ArtifactResolve, ((XmlDocument)getFromCache(parser.ArtifactResolve.Artifact)).DocumentElement);
-            } else if (parser.IsArtifactResponse) {
+            }
+            else if (parser.IsArtifactResponse)
+            {
                 logger.Debug(TraceMessages.ArtifactResolveReceived);
 
                 var idp = IdpSelectionUtil.RetrieveIDPConfiguration(parser.Issuer, config);
-                if (!parser.CheckSamlMessageSignature(idp.Metadata.Keys)) {
+                if (!parser.CheckSamlMessageSignature(idp.Metadata.Keys))
+                {
                     logger.Error(ErrorMessages.ArtifactResponseSignatureInvalid);
                     throw new Saml20Exception(ErrorMessages.ArtifactResponseSignatureInvalid);
                 }
 
                 var status = parser.ArtifactResponse.Status;
-                if (status.StatusCode.Value != Saml20Constants.StatusCodes.Success) {
+                if (status.StatusCode.Value != Saml20Constants.StatusCodes.Success)
+                {
                     logger.ErrorFormat(ErrorMessages.ArtifactResponseStatusCodeInvalid, status.StatusCode.Value);
                     throw new Saml20Exception(string.Format(ErrorMessages.ArtifactResponseStatusCodeInvalid, status.StatusCode.Value));
                 }
 
-                if (parser.ArtifactResponse.Any.LocalName == Response.ElementName) {
+                if (parser.ArtifactResponse.Any.LocalName == Response.ElementName)
+                {
                     Utility.CheckReplayAttack(parser.ArtifactResponse.Any, true, session);
 
                     var responseStatus = Utility.GetStatusElement(parser.ArtifactResponse.Any);
-                    if (responseStatus.StatusCode.Value != Saml20Constants.StatusCodes.Success) {
+                    if (responseStatus.StatusCode.Value != Saml20Constants.StatusCodes.Success)
+                    {
                         logger.ErrorFormat(ErrorMessages.ArtifactResponseStatusCodeInvalid, responseStatus.StatusCode.Value);
                         throw new Saml20Exception(string.Format(ErrorMessages.ArtifactResponseStatusCodeInvalid, responseStatus.StatusCode.Value));
                     }
 
                     bool isEncrypted;
                     var assertion = Utility.GetAssertion(parser.ArtifactResponse.Any, out isEncrypted);
-                    if (assertion == null) {
+                    if (assertion == null)
+                    {
                         logger.Error(ErrorMessages.ArtifactResponseMissingAssertion);
                         throw new Saml20Exception(ErrorMessages.ArtifactResponseMissingAssertion);
                     }
@@ -363,11 +414,15 @@ namespace SAML2.Protocol
                         ? Utility.HandleEncryptedAssertion(assertion, config, getFromCache, setInCache)
                         : Utility.HandleAssertion(assertion, config, getFromCache, setInCache);
                     signonCallback(samlAssertion);
-                } else {
+                }
+                else
+                {
                     logger.ErrorFormat(ErrorMessages.ArtifactResponseMissingResponse);
                     throw new Saml20Exception(ErrorMessages.ArtifactResponseMissingResponse);
                 }
-            } else {
+            }
+            else
+            {
                 logger.ErrorFormat(ErrorMessages.SOAPMessageUnsupportedSamlMessage);
                 throw new Saml20Exception(ErrorMessages.SOAPMessageUnsupportedSamlMessage);
             }
@@ -387,19 +442,23 @@ namespace SAML2.Protocol
             // Determine whether the assertion should be decrypted before being validated.
             bool isEncrypted;
             var assertion = Utility.GetAssertion(doc.DocumentElement, out isEncrypted);
-            if (isEncrypted) {
+            if (isEncrypted)
+            {
                 assertion = Utility.GetDecryptedAssertion(assertion, config).Assertion.DocumentElement;
             }
 
             // Check if an encoding-override exists for the IdP endpoint in question
             var issuer = Utility.GetIssuer(assertion);
             var endpoint = IdpSelectionUtil.RetrieveIDPConfiguration(issuer, config);
-            if (!endpoint.AllowReplayAttacks) {
+            if (!endpoint.AllowReplayAttacks)
+            {
                 Utility.CheckReplayAttack(doc.DocumentElement, !endpoint.AllowIdPInitiatedSso, session);
             }
             var status = Utility.GetStatusElement(doc.DocumentElement);
-            if (status.StatusCode.Value != Saml20Constants.StatusCodes.Success) {
-                if (status.StatusCode.Value == Saml20Constants.StatusCodes.NoPassive) {
+            if (status.StatusCode.Value != Saml20Constants.StatusCodes.Success)
+            {
+                if (status.StatusCode.Value == Saml20Constants.StatusCodes.NoPassive)
+                {
                     logger.Error(ErrorMessages.ResponseStatusIsNoPassive);
                     throw new Saml20Exception(ErrorMessages.ResponseStatusIsNoPassive);
                 }
@@ -408,17 +467,21 @@ namespace SAML2.Protocol
                 throw new Saml20Exception(string.Format(ErrorMessages.ResponseStatusNotSuccessful, status));
             }
 
-            if (!string.IsNullOrEmpty(endpoint.ResponseEncoding)) {
+            if (!string.IsNullOrEmpty(endpoint.ResponseEncoding))
+            {
                 Encoding encodingOverride;
-                try {
+                try
+                {
                     encodingOverride = Encoding.GetEncoding(endpoint.ResponseEncoding);
                 }
-                catch (ArgumentException ex) {
+                catch (ArgumentException ex)
+                {
                     logger.ErrorFormat(ErrorMessages.UnknownEncoding, endpoint.ResponseEncoding);
                     throw new ArgumentException(string.Format(ErrorMessages.UnknownEncoding, endpoint.ResponseEncoding), ex);
                 }
 
-                if (encodingOverride.CodePage != defaultEncoding.CodePage) {
+                if (encodingOverride.CodePage != defaultEncoding.CodePage)
+                {
                     var doc1 = GetDecodedSamlResponse(samlResponse, encodingOverride);
                     assertion = GetAssertion(doc1.DocumentElement, out isEncrypted);
                 }
