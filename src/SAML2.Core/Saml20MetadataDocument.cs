@@ -586,7 +586,7 @@ namespace SAML2
         {
             var entity = CreateDefaultEntity();
             entity.EntityID = config.ServiceProvider.Id;
-            entity.ValidUntil = DateTime.Now.AddDays(7);
+            entity.ValidUntil = DateTime.Now.AddDays(1);
 
             var serviceProviderDescriptor = new SpSsoDescriptor
             {
@@ -676,6 +676,7 @@ namespace SAML2
                 attConsumingService.Index = signonServiceEndpoints[0].Index;
                 attConsumingService.IsDefault = true;
                 attConsumingService.ServiceName = new[] { new LocalizedName("SP", "en") };
+                attConsumingService.ServiceDescription = new[] { new LocalizedName($"{config.ServiceProvider.Id} Service Provider", "en") };
 
                 attConsumingService.RequestedAttribute = new RequestedAttribute[config.Metadata.RequestedAttributes.Count];
 
