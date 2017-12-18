@@ -36,6 +36,11 @@ namespace SAML2
         public const string Xenc = "http://www.w3.org/2001/04/xmlenc#";
 
         /// <summary>
+        /// The XML namespace of <c>XmlEnc</c>
+        /// </summary>
+        public const string Federation = "http://docs.oasis-open.org/wsfed/federation/200706";
+
+        /// <summary>
         /// The default value of the Format property for a <c>NameID</c> element
         /// </summary>
         public const string DefaultNameIdFormat = "urn:oasis:names:tc:SAML:1.0:nameid-format:unspecified";

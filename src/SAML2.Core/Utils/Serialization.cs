@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
@@ -98,7 +99,7 @@ namespace SAML2.Utils
 
             var reader = new StreamReader(stream);
             stream.Seek(0, SeekOrigin.Begin);
-            
+
             return reader.ReadToEnd();
         }
     }

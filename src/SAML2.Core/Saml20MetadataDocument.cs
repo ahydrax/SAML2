@@ -71,7 +71,7 @@ namespace SAML2
         /// Initializes a new instance of the <see cref="Saml20MetadataDocument"/> class.
         /// </summary>
         /// <param name="entityDescriptor">The entity descriptor.</param>
-        public Saml20MetadataDocument(XmlDocument entityDescriptor) 
+        public Saml20MetadataDocument(XmlDocument entityDescriptor)
             : this()
         {
             Initialize(entityDescriptor);
@@ -79,8 +79,10 @@ namespace SAML2
 
         private void Initialize(XmlDocument entityDescriptor)
         {
-            if (XmlSignatureUtils.IsSigned(entityDescriptor)) {
-                if (!XmlSignatureUtils.CheckSignature(entityDescriptor)) {
+            if (XmlSignatureUtils.IsSigned(entityDescriptor))
+            {
+                if (!XmlSignatureUtils.CheckSignature(entityDescriptor))
+                {
                     throw new Saml20Exception("Metadata signature could not be verified.");
                 }
             }
@@ -124,11 +126,13 @@ namespace SAML2
         {
             if (file == null) throw new ArgumentNullException("file");
 
-            try {
+            try
+            {
                 var doc = LoadFileAsXmlDocument(file, encodings ?? DefaultEncodings());
                 InitializeDocument(doc);
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 // Probably not a metadata file.
                 Logging.LoggerProvider.LoggerFor(typeof(IdentityProviders)).Error("Problem parsing metadata file", e);
                 throw;
@@ -138,11 +142,13 @@ namespace SAML2
         {
             if (document == null) throw new ArgumentNullException("file");
 
-            try {
+            try
+            {
                 var doc = LoadStreamAsXmlDocument(document, encodings ?? DefaultEncodings());
                 InitializeDocument(doc);
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 // Probably not a metadata file.
                 Logging.LoggerProvider.LoggerFor(typeof(IdentityProviders)).Error("Problem parsing metadata file", e);
                 throw;
@@ -153,14 +159,17 @@ namespace SAML2
         {
             if (doc == null) throw new InvalidOperationException("Metadata not a valid document");
             var isInitialized = false;
-            foreach (var child in doc.ChildNodes.Cast<XmlNode>().Where(child => child.NamespaceURI == Saml20Constants.Metadata)) {
-                if (child.LocalName == EntityDescriptor.ElementName) {
+            foreach (var child in doc.ChildNodes.Cast<XmlNode>().Where(child => child.NamespaceURI == Saml20Constants.Metadata))
+            {
+                if (child.LocalName == EntityDescriptor.ElementName)
+                {
                     Initialize(doc);
                     isInitialized = true;
                 }
 
                 // TODO Decide how to handle several entities in one metadata file.
-                if (child.LocalName == EntitiesDescriptor.ElementName) {
+                if (child.LocalName == EntitiesDescriptor.ElementName)
+                {
                     throw new NotImplementedException();
                 }
             }
@@ -171,14 +180,15 @@ namespace SAML2
 
         private static IEnumerable<Encoding> DefaultEncodings()
         {
-            return new [] { Encoding.UTF8, Encoding.GetEncoding("iso-8859-1") };
+            return new[] { Encoding.UTF8, Encoding.GetEncoding("iso-8859-1") };
         }
 
         private static XmlDocument LoadStreamAsXmlDocument(Stream stream, IEnumerable<Encoding> encodings)
         {
             return LoadAsXmlDocument(encodings,
                 d => d.Load(stream),
-                (d, e) => {
+                (d, e) =>
+                {
                     var reader = new StreamReader(stream, e);
                     d.Load(reader);
                 });
@@ -188,10 +198,11 @@ namespace SAML2
         {
             return LoadAsXmlDocument(encodings,
                 d => d.Load(filename),
-                (d,e) => {
+                (d, e) =>
+                {
                     var reader = new StreamReader(filename, e);
                     d.Load(reader);
-            });
+                });
         }
 
         /// <summary>
@@ -203,17 +214,21 @@ namespace SAML2
         {
             var doc = new XmlDocument { PreserveWhitespace = true };
 
-            try {
+            try
+            {
                 // First attempt a standard load, where the XML document is expected to declare its encoding by itself.
                 docLoad(doc);
-                try {
-                    if (XmlSignatureUtils.IsSigned(doc) && !XmlSignatureUtils.CheckSignature(doc)) {
+                try
+                {
+                    if (XmlSignatureUtils.IsSigned(doc) && !XmlSignatureUtils.CheckSignature(doc))
+                    {
                         // Bad, bad, bad... never use exceptions for control flow! Who wrote this?
                         // Throw an exception to get into quirksmode.
                         throw new InvalidOperationException("Invalid file signature");
                     }
                 }
-                catch (CryptographicException) {
+                catch (CryptographicException)
+                {
                     // Ignore cryptographic exception caused by Geneva server's inability to generate a
                     // .NET compliant xml signature
                     return ParseGenevaServerMetadata(doc);
@@ -221,21 +236,28 @@ namespace SAML2
 
                 return doc;
             }
-            catch (XmlException) {
+            catch (XmlException)
+            {
                 // Enter quirksmode
-                foreach (var encoding in encodings) {
+                foreach (var encoding in encodings)
+                {
                     StreamReader reader = null;
-                    try {
+                    try
+                    {
                         quirksModeDocLoad(doc, encoding);
-                        if (XmlSignatureUtils.IsSigned(doc) && !XmlSignatureUtils.CheckSignature(doc)) {
+                        if (XmlSignatureUtils.IsSigned(doc) && !XmlSignatureUtils.CheckSignature(doc))
+                        {
                             continue;
                         }
                     }
-                    catch (XmlException) {
+                    catch (XmlException)
+                    {
                         continue;
                     }
-                    finally {
-                        if (reader != null) {
+                    finally
+                    {
+                        if (reader != null)
+                        {
                             reader.Close();
                         }
                     }
@@ -254,18 +276,21 @@ namespace SAML2
         /// <returns>The XML document.</returns>
         private static XmlDocument ParseGenevaServerMetadata(XmlDocument doc)
         {
-            if (doc == null) {
+            if (doc == null)
+            {
                 throw new ArgumentNullException("doc");
             }
 
-            if (doc.DocumentElement == null) {
+            if (doc.DocumentElement == null)
+            {
                 throw new ArgumentException("DocumentElement cannot be null", "doc");
             }
 
             var other = new XmlDocument { PreserveWhitespace = true };
             other.LoadXml(doc.OuterXml);
 
-            foreach (var node in other.DocumentElement.ChildNodes.Cast<XmlNode>().Where(node => node.Name != IdpSsoDescriptor.ElementName).ToList()) {
+            foreach (var node in other.DocumentElement.ChildNodes.Cast<XmlNode>().Where(node => node.Name != IdpSsoDescriptor.ElementName).ToList())
+            {
                 other.DocumentElement.RemoveChild(node);
             }
 
@@ -544,7 +569,7 @@ namespace SAML2
             signedXml.KeyInfo = new KeyInfo();
             // This was WholeChain, requiring us to trust our certs. WIF WSFed does not have this requirement,
             // so the option was relaxed to EndCertOnly. This might need to be configurable
-            signedXml.KeyInfo.AddClause(new KeyInfoX509Data(certificate, X509IncludeOption.EndCertOnly)); 
+            signedXml.KeyInfo.AddClause(new KeyInfoX509Data(certificate, X509IncludeOption.EndCertOnly));
 
             signedXml.ComputeSignature();
 
@@ -564,11 +589,11 @@ namespace SAML2
             entity.ValidUntil = DateTime.Now.AddDays(7);
 
             var serviceProviderDescriptor = new SpSsoDescriptor
-                                   {
-                                       ProtocolSupportEnumeration = new[] { Saml20Constants.Protocol },
-                                       AuthnRequestsSigned = XmlConvert.ToString(true),
-                                       WantAssertionsSigned = XmlConvert.ToString(true)
-                                   };
+            {
+                ProtocolSupportEnumeration = new[] { Saml20Constants.Protocol },
+                AuthnRequestsSigned = XmlConvert.ToString(true),
+                WantAssertionsSigned = XmlConvert.ToString(true)
+            };
 
             if (config.ServiceProvider.NameIdFormats.Count > 0)
             {
@@ -579,7 +604,7 @@ namespace SAML2
                     serviceProviderDescriptor.NameIdFormat[count++] = elem.Format;
                 }
             }
-            
+
             var baseUrl = new Uri(config.ServiceProvider.Server);
             var logoutServiceEndpoints = new List<Endpoint>();
             var signonServiceEndpoints = new List<IndexedEndpoint>();
@@ -592,20 +617,20 @@ namespace SAML2
                 if (endpoint.Type == EndpointType.SignOn)
                 {
                     var loginEndpoint = new IndexedEndpoint
-                                            {
-                                                Index = endpoint.Index,
-                                                IsDefault = true,
-                                                Location = new Uri(baseUrl, endpoint.LocalPath).ToString(),
-                                                Binding = GetBinding(endpoint.Binding, Saml20Constants.ProtocolBindings.HttpPost)
-                                            };
+                    {
+                        Index = endpoint.Index,
+                        IsDefault = true,
+                        Location = new Uri(baseUrl, endpoint.LocalPath).ToString(),
+                        Binding = GetBinding(endpoint.Binding, Saml20Constants.ProtocolBindings.HttpPost)
+                    };
                     signonServiceEndpoints.Add(loginEndpoint);
 
                     var artifactSignonEndpoint = new IndexedEndpoint
-                                                     {
-                                                         Binding = Saml20Constants.ProtocolBindings.HttpSoap,
-                                                         Index = loginEndpoint.Index,
-                                                         Location = loginEndpoint.Location
-                                                     };
+                    {
+                        Binding = Saml20Constants.ProtocolBindings.HttpSoap,
+                        Index = loginEndpoint.Index,
+                        Location = loginEndpoint.Location
+                    };
                     artifactResolutionEndpoints.Add(artifactSignonEndpoint);
 
                     continue;
@@ -614,37 +639,35 @@ namespace SAML2
                 if (endpoint.Type == EndpointType.Logout)
                 {
                     var logoutEndpoint = new Endpoint
-                                             {
-                                                 Location = new Uri(baseUrl, endpoint.LocalPath).ToString()
-                                             };
+                    {
+                        Location = new Uri(baseUrl, endpoint.LocalPath).ToString()
+                    };
                     logoutEndpoint.ResponseLocation = logoutEndpoint.Location;
                     logoutEndpoint.Binding = GetBinding(endpoint.Binding, Saml20Constants.ProtocolBindings.HttpPost);
                     logoutServiceEndpoints.Add(logoutEndpoint);
 
                     // TODO: Look at this...
                     logoutEndpoint = new Endpoint
-                                         {
-                                             Location = new Uri(baseUrl, endpoint.LocalPath).ToString()
-                                         };
+                    {
+                        Location = new Uri(baseUrl, endpoint.LocalPath).ToString()
+                    };
                     logoutEndpoint.ResponseLocation = logoutEndpoint.Location;
                     logoutEndpoint.Binding = GetBinding(endpoint.Binding, Saml20Constants.ProtocolBindings.HttpRedirect);
                     logoutServiceEndpoints.Add(logoutEndpoint);
 
                     var artifactLogoutEndpoint = new IndexedEndpoint
-                                                     {
-                                                         Binding = Saml20Constants.ProtocolBindings.HttpSoap,
-                                                         Index = endpoint.Index,
-                                                         Location = logoutEndpoint.Location
-                                                     };
+                    {
+                        Binding = Saml20Constants.ProtocolBindings.HttpSoap,
+                        Index = endpoint.Index,
+                        Location = logoutEndpoint.Location
+                    };
                     artifactResolutionEndpoints.Add(artifactLogoutEndpoint);
-                    
-                    continue;
                 }
-            }           
+            }
 
             serviceProviderDescriptor.SingleLogoutService = logoutServiceEndpoints.ToArray();
             serviceProviderDescriptor.AssertionConsumerService = signonServiceEndpoints.ToArray();
-            
+
             // Attribute consuming service. 
             if (config.Metadata.RequestedAttributes.Count > 0)
             {
@@ -659,9 +682,9 @@ namespace SAML2
                 for (var i = 0; i < config.Metadata.RequestedAttributes.Count; i++)
                 {
                     attConsumingService.RequestedAttribute[i] = new RequestedAttribute
-                                                                    {
-                                                                        Name = config.Metadata.RequestedAttributes[i].Name
-                                                                    };
+                    {
+                        Name = config.Metadata.RequestedAttributes[i].Name
+                    };
                     if (config.Metadata.RequestedAttributes[i].IsRequired)
                     {
                         attConsumingService.RequestedAttribute[i].IsRequired = true;
@@ -686,41 +709,39 @@ namespace SAML2
             var keySigning = new KeyDescriptor();
             var keyEncryption = new KeyDescriptor();
             serviceProviderDescriptor.KeyDescriptor = new[] { keySigning, keyEncryption };
-            
+
             keySigning.Use = KeyTypes.Signing;
             keySigning.UseSpecified = true;
 
             keyEncryption.Use = KeyTypes.Encryption;
             keyEncryption.UseSpecified = true;
-                       
+
             // Ugly conversion between the .Net framework classes and our classes ... avert your eyes!!
-            keySigning.KeyInfo = Serialization.DeserializeFromXmlString<Schema.XmlDSig.KeyInfo>(keyInfo.GetXml().OuterXml);            
+            keySigning.KeyInfo = Serialization.DeserializeFromXmlString<Schema.XmlDSig.KeyInfo>(keyInfo.GetXml().OuterXml);
             keyEncryption.KeyInfo = keySigning.KeyInfo;
 
             // apply the <Organization> element
             if (config.Metadata.Organization != null)
             {
                 entity.Organization = new Schema.Metadata.Organization
-                                          {
-                                              OrganizationName = new[] { new LocalizedName { Value = config.Metadata.Organization.Name } },
-                                              OrganizationDisplayName = new[] { new LocalizedName { Value = config.Metadata.Organization.DisplayName } },
-                                              OrganizationURL = new[] { new LocalizedURI { Value = config.Metadata.Organization.Url } }
-                                          };
+                {
+                    OrganizationName = new[] { new LocalizedName(config.Metadata.Organization.Name, "en") },
+                    OrganizationDisplayName = new[] { new LocalizedName(config.Metadata.Organization.DisplayName, "en") },
+                    OrganizationURL = new[] { new LocalizedURI(config.Metadata.Organization.Url, "en") }
+                };
             }
 
             if (config.Metadata.Contacts != null && config.Metadata.Contacts.Any())
             {
                 entity.ContactPerson = config.Metadata.Contacts.Select(x => new Schema.Metadata.Contact
                 {
-                                                                                    ContactType =
-                                                                                        (Schema.Metadata.ContactType)
-                                                                                        ((int)x.Type),
-                                                                                    Company = x.Company,
-                                                                                    GivenName = x.GivenName,
-                                                                                    SurName = x.SurName,
-                                                                                    EmailAddress = new[] { x.Email },
-                                                                                    TelephoneNumber = new[] { x.Phone }
-                                                                                }).ToArray();
+                    ContactType = (Schema.Metadata.ContactType)((int)x.Type),
+                    Company = x.Company,
+                    GivenName = x.GivenName,
+                    SurName = x.SurName,
+                    EmailAddress = new[] { x.Email },
+                    TelephoneNumber = new[] { x.Phone }
+                }).ToArray();
             }
         }
 
@@ -883,7 +904,7 @@ namespace SAML2
         /// Extract KeyDescriptors from the metadata document represented by this instance.
         /// </summary>
         private void ExtractKeyDescriptors()
-        {            
+        {
             if (_keys != null || Entity == null)
             {
                 return;
@@ -901,14 +922,14 @@ namespace SAML2
         /// </summary>
         /// <param name="doc">The doc.</param>
         private void ExtractKeyDescriptors(XmlDocument doc)
-        {            
+        {
             var list = doc.GetElementsByTagName(KeyDescriptor.ElementName, Saml20Constants.Metadata);
             _keys = new List<KeyDescriptor>(list.Count);
 
             foreach (XmlNode node in list)
             {
                 _keys.Add(Serialization.DeserializeFromXmlString<KeyDescriptor>(node.OuterXml));
-            }                        
+            }
         }
     }
 }

@@ -115,7 +115,7 @@ namespace SAML2.Schema.Metadata
         /// <value>The extensions.</value>
         [XmlElement("Extensions", Order = 2)]
         public ExtensionType Extensions { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the items.
         /// <c>&lt;RoleDescriptor&gt;</c>, <c>&lt;IdpSsoDescriptor&gt;</c>, <c>&lt;SpSsoDescriptor&gt;,</c>
@@ -128,8 +128,8 @@ namespace SAML2.Schema.Metadata
         [XmlElement(AuthnAuthorityDescriptor.ElementName, typeof(AuthnAuthorityDescriptor), Order = 3)]
         [XmlElement(IdpSsoDescriptor.ElementName, typeof(IdpSsoDescriptor), Order = 3)]
         [XmlElement(PdpDescriptor.ElementName, typeof(PdpDescriptor), Order = 3)]
-        [XmlElement(RoleDescriptor.ElementName, typeof(RoleDescriptor), Order = 3)]
         [XmlElement(SpSsoDescriptor.ElementName, typeof(SpSsoDescriptor), Order = 3)]
+        [XmlAnyElement(Name = RoleDescriptor.ElementName)]
         public object[] Items { get; set; }
 
         /// <summary>
