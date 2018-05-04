@@ -44,7 +44,7 @@ namespace Owin
                 }
             }
 
-            context.Response.ContentType = "text/xml"; //Saml20Constants.MetadataMimetype; - that will prompt a download
+            context.Response.ContentType = "application/samlmetadata+xml"; //Saml20Constants.MetadataMimetype; - that will prompt a download
 
             var filename = context.Request.Query.Get("file");
             if (!string.IsNullOrWhiteSpace(filename))
