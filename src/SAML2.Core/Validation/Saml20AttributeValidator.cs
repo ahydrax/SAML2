@@ -31,7 +31,7 @@ namespace SAML2.Validation
         {
             if (samlAttribute == null)
             {
-                throw new ArgumentNullException("samlAttribute");
+                throw new ArgumentNullException(nameof(samlAttribute));
             }
 
             if (!Saml20Utils.ValidateRequiredString(samlAttribute.Name))

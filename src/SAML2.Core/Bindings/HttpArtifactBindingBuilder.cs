@@ -24,9 +24,9 @@ namespace SAML2.Bindings
         /// <param name="sendResponseMessage">Action to send messages to response stream</param>
         public HttpArtifactBindingBuilder(Saml2Configuration config, Action<string> redirect, Action<string> sendResponseMessage)
         {
-            if (config == null) throw new ArgumentNullException("config");
-            if (redirect == null) throw new ArgumentNullException("redirect");
-            if (sendResponseMessage == null) throw new ArgumentNullException("sendResponseMessage");
+            if (config == null) throw new ArgumentNullException(nameof(config));
+            if (redirect == null) throw new ArgumentNullException(nameof(redirect));
+            if (sendResponseMessage == null) throw new ArgumentNullException(nameof(sendResponseMessage));
             this.redirect = redirect;
             this.config = config;
             this.sendResponseMessage = sendResponseMessage;

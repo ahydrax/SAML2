@@ -237,7 +237,7 @@ namespace SAML2
                 result = SamlAttribute.NameformatUri;
                 break;
             default:
-                throw new ArgumentException(string.Format("Unsupported nameFormat: {0}", Enum.GetName(typeof(Saml20NameFormat), nameFormat)), "nameFormat");
+                throw new ArgumentException(string.Format("Unsupported nameFormat: {0}", Enum.GetName(typeof(Saml20NameFormat), nameFormat)), nameof(nameFormat));
             }
 
             return result;

@@ -17,7 +17,7 @@ namespace SAML2.Validation
         {
             if (encryptedElement == null)
             {
-                throw new ArgumentNullException("encryptedElement");
+                throw new ArgumentNullException(nameof(encryptedElement));
             }
 
             if (encryptedElement.EncryptedData == null)

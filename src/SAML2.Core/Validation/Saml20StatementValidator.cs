@@ -23,7 +23,7 @@ namespace SAML2.Validation
         {
             if (statement == null)
             {
-                throw new ArgumentNullException("statement");
+                throw new ArgumentNullException(nameof(statement));
             }
 
             // Validate all possible statements in the assertion

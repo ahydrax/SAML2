@@ -34,7 +34,7 @@ namespace Owin.Security.Saml
 
             if (Options.Configuration == null)
             {
-                throw new ArgumentOutOfRangeException("options", "Configuration must be set prior to using SamlAuthenticationMiddleware");
+                throw new ArgumentOutOfRangeException(nameof(options), "Configuration must be set prior to using SamlAuthenticationMiddleware");
             }
         }
 

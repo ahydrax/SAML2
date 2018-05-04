@@ -57,7 +57,7 @@ namespace SAML2.Validation
         {
             if (assertion == null)
             {
-                throw new ArgumentNullException("assertion");
+                throw new ArgumentNullException(nameof(assertion));
             }
 
             ValidateAssertionAttributes(assertion);

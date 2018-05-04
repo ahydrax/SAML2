@@ -17,7 +17,7 @@ namespace SAML2.Validation
         {
             if (anyAttributes == null)
             {
-                throw new ArgumentNullException("anyAttributes");
+                throw new ArgumentNullException(nameof(anyAttributes));
             }
 
             if (anyAttributes.Length == 0)

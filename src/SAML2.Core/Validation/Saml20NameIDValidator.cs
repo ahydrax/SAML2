@@ -24,7 +24,7 @@ namespace SAML2.Validation
         {
             if (nameId == null)
             {
-                throw new ArgumentNullException("nameId");
+                throw new ArgumentNullException(nameof(nameId));
             }
 
             if (string.IsNullOrEmpty(nameId.Format))

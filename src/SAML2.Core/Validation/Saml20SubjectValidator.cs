@@ -27,7 +27,7 @@ namespace SAML2.Validation
         {
             if (subject == null)
             {
-                throw new ArgumentNullException("subject");
+                throw new ArgumentNullException(nameof(subject));
             }
 
             var validContentFound = false;

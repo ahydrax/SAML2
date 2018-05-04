@@ -42,12 +42,12 @@ namespace SAML2.Utils
         {
             if (sourceIdHash.Length != SourceIdLength)
             {
-                throw new ArgumentException(string.Format(ArgumentLengthErrorFmt, sourceIdHash.Length, SourceIdLength), "sourceIdHash");
+                throw new ArgumentException(string.Format(ArgumentLengthErrorFmt, sourceIdHash.Length, SourceIdLength), nameof(sourceIdHash));
             }
 
             if (messageHandle.Length != MessageHandleLength)
             {
-                throw new ArgumentException(string.Format(ArgumentLengthErrorFmt, messageHandle.Length, MessageHandleLength), "messageHandle");
+                throw new ArgumentException(string.Format(ArgumentLengthErrorFmt, messageHandle.Length, MessageHandleLength), nameof(messageHandle));
             }
 
             var typeCode = new byte[2];
@@ -107,18 +107,18 @@ namespace SAML2.Utils
         {
             if (sourceIdHash.Length != SourceIdLength)
             {
-                throw new ArgumentException(string.Format(ArgumentLengthErrorFmt, sourceIdHash.Length, SourceIdLength), "sourceIdHash");
+                throw new ArgumentException(string.Format(ArgumentLengthErrorFmt, sourceIdHash.Length, SourceIdLength), nameof(sourceIdHash));
             }
 
             if (messageHandle.Length != MessageHandleLength)
             {
-                throw new ArgumentException(string.Format(ArgumentLengthErrorFmt, messageHandle.Length, MessageHandleLength), "messageHandle");
+                throw new ArgumentException(string.Format(ArgumentLengthErrorFmt, messageHandle.Length, MessageHandleLength), nameof(messageHandle));
             }
 
             var bytes = Convert.FromBase64String(artifact);
             if (bytes.Length != ArtifactLength)
             {
-                throw new ArgumentException("Unexpected artifact length", "artifact");
+                throw new ArgumentException("Unexpected artifact length", nameof(artifact));
             }
 
             typeCodeValue = (short)(bytes[0] << 8 | bytes[1]);
@@ -177,7 +177,7 @@ namespace SAML2.Utils
                 return (ushort)parsedEndpointIndex;   
             }
 
-            throw new ArgumentException("Malformed artifact", "artifact");
+            throw new ArgumentException("Malformed artifact", nameof(artifact));
         }
     }
 }

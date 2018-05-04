@@ -43,7 +43,7 @@ namespace SAML2.Protocol
         {
             if (keys == null)
             {
-                throw new ArgumentNullException("keys");
+                throw new ArgumentNullException(nameof(keys));
             }
 
             var keyClauses = keys.SelectMany(x => x.KeyInfo.Items).OfType<X509Data>().SelectMany(x => x.Items).OfType<byte[]>().ToList();

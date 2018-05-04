@@ -16,8 +16,8 @@ namespace SAML2.Utils
 
         public MetadataUtils(Config.Saml2Configuration configuration, Logging.IInternalLogger logger)
         {
-            if (configuration == null) throw new ArgumentNullException("configuration");
-            if (logger == null) throw new ArgumentNullException("logger");
+            if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+            if (logger == null) throw new ArgumentNullException(nameof(logger));
             this.configuration = configuration;
             this.logger = logger;
         }

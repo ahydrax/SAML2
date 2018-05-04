@@ -124,7 +124,7 @@ namespace SAML2
 
         public Saml20MetadataDocument(string file, IEnumerable<Encoding> encodings)
         {
-            if (file == null) throw new ArgumentNullException("file");
+            if (file == null) throw new ArgumentNullException(nameof(file));
 
             try
             {
@@ -278,12 +278,12 @@ namespace SAML2
         {
             if (doc == null)
             {
-                throw new ArgumentNullException("doc");
+                throw new ArgumentNullException(nameof(doc));
             }
 
             if (doc.DocumentElement == null)
             {
-                throw new ArgumentException("DocumentElement cannot be null", "doc");
+                throw new ArgumentException("DocumentElement cannot be null", nameof(doc));
             }
 
             var other = new XmlDocument { PreserveWhitespace = true };

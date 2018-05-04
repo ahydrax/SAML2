@@ -362,7 +362,7 @@ namespace SAML2
         {
             if (keys == null)
             {
-                throw new ArgumentNullException("keys");
+                throw new ArgumentNullException(nameof(keys));
             }
 
             return keys.Where(key => key != null).Any(CheckSignature);
@@ -496,7 +496,7 @@ namespace SAML2
         {
             if (cert == null)
             {
-                throw new ArgumentNullException("cert");
+                throw new ArgumentNullException(nameof(cert));
             }
 
             if (!cert.HasPrivateKey)

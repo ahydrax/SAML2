@@ -111,7 +111,7 @@ namespace SAML2.Bindings
         {
             if (key == null)
             {
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
 
             if (!(key is DSA || key is RSACryptoServiceProvider))

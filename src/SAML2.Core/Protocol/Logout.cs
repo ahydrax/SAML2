@@ -14,8 +14,8 @@ namespace SAML2.Protocol
 
         public Logout(IInternalLogger logger, SAML2.Config.Saml2Configuration config)
         {
-            if (logger == null) throw new ArgumentNullException("logger");
-            if (config == null) throw new ArgumentNullException("config"); 
+            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (config == null) throw new ArgumentNullException(nameof(config)); 
             this.logger = logger;
             this.config = config;
         }

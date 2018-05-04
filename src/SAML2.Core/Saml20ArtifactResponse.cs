@@ -87,7 +87,7 @@ namespace SAML2
         /// <returns>The default <see cref="Saml20ArtifactResponse"/>.</returns>
         public static Saml20ArtifactResponse GetDefault(string serviceProviderId)
         {
-            if (serviceProviderId == null) throw new ArgumentNullException("serviceProviderId"); 
+            if (serviceProviderId == null) throw new ArgumentNullException(nameof(serviceProviderId)); 
             var result = new Saml20ArtifactResponse();
             result.Issuer = serviceProviderId;
 

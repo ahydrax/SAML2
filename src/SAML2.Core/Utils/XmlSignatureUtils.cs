@@ -309,7 +309,7 @@ namespace SAML2.Utils
         {
             if (doc == null)
             {
-                throw new ArgumentNullException("doc");
+                throw new ArgumentNullException(nameof(doc));
             }
 
             if (!doc.PreserveWhitespace)
@@ -327,7 +327,7 @@ namespace SAML2.Utils
         {
             if (el == null)
             {
-                throw new ArgumentNullException("el");
+                throw new ArgumentNullException(nameof(el));
             }
 
             if (el.OwnerDocument != null && !el.OwnerDocument.PreserveWhitespace)

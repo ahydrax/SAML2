@@ -257,7 +257,7 @@ namespace SAML2
         {
             if (element == null)
             {
-                throw new ArgumentNullException("element");
+                throw new ArgumentNullException(nameof(element));
             }
 
             if (element.LocalName != EncryptedAssertion.ElementName)

@@ -170,7 +170,7 @@ namespace SAML2.AspNet.Config
         {
             if (element == null)
             {
-                throw new ArgumentNullException("element");
+                throw new ArgumentNullException(nameof(element));
             }
 
             return ((TConfigurationElementType)element).ElementKey;

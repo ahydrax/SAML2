@@ -23,7 +23,7 @@ namespace SAML2.Logging
             private readonly Action<string> write;
             public VerboseLogger(Action<string> write)
             {
-                if (write == null) throw new ArgumentNullException("write");
+                if (write == null) throw new ArgumentNullException(nameof(write));
                 this.write = write;
             }
             public bool IsDebugEnabled

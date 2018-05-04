@@ -27,7 +27,7 @@ namespace SAML2.Utils
 
         public IdpSelectionUtil(IInternalLogger logger)
         {
-            if (logger == null) throw new ArgumentNullException("logger");
+            if (logger == null) throw new ArgumentNullException(nameof(logger));
             this.logger = logger;
         }
         /// <summary>

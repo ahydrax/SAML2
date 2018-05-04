@@ -32,7 +32,7 @@ namespace SAML2.Tests
         {
             if (assertion == null)
             {
-                throw new ArgumentNullException("assertion");
+                throw new ArgumentNullException(nameof(assertion));
             }
 
             var res = new XmlDocument { PreserveWhitespace = true };
@@ -228,7 +228,7 @@ namespace SAML2.Tests
         {
             if (issuer == null)
             {
-                throw new ArgumentNullException("issuer");
+                throw new ArgumentNullException(nameof(issuer));
             }
 
             // TODO: Mock out a config for this test

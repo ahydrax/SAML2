@@ -16,34 +16,34 @@ namespace SAML2.Bindings
         {
             if (config == null)
             {
-                throw new ArgumentNullException("config", ErrorMessages.ConfigMissingSaml2Element);
+                throw new ArgumentNullException(nameof(config), ErrorMessages.ConfigMissingSaml2Element);
             }
 
             if (config.ServiceProvider == null)
             {
-                throw new ArgumentOutOfRangeException("config", ErrorMessages.ConfigMissingServiceProviderElement);
+                throw new ArgumentOutOfRangeException(nameof(config), ErrorMessages.ConfigMissingServiceProviderElement);
             }
 
             if (string.IsNullOrEmpty(config.ServiceProvider.Id))
             {
-                throw new ArgumentOutOfRangeException("config", ErrorMessages.ConfigMissingServiceProviderIdAttribute);
+                throw new ArgumentOutOfRangeException(nameof(config), ErrorMessages.ConfigMissingServiceProviderIdAttribute);
             }
 
             if (config.ServiceProvider.SigningCertificate == null)
             {
-                throw new ArgumentOutOfRangeException("config", ErrorMessages.ConfigMissingSigningCertificateElement);
+                throw new ArgumentOutOfRangeException(nameof(config), ErrorMessages.ConfigMissingSigningCertificateElement);
             }
 
             // This will throw if no certificate or multiple certificates are found
             var certificate = config.ServiceProvider.SigningCertificate;
             if (!certificate.HasPrivateKey)
             {
-                throw new ArgumentOutOfRangeException("config", ErrorMessages.ConfigSigningCertificateMissingPrivateKey);
+                throw new ArgumentOutOfRangeException(nameof(config), ErrorMessages.ConfigSigningCertificateMissingPrivateKey);
             }
 
             if (config.IdentityProvidersSource == null)
             {
-                throw new ArgumentOutOfRangeException("config", ErrorMessages.ConfigMissingIdentityProvidersElement);
+                throw new ArgumentOutOfRangeException(nameof(config), ErrorMessages.ConfigMissingIdentityProvidersElement);
             }
 
             return true;

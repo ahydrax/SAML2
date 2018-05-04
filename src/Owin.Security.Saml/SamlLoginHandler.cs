@@ -55,7 +55,7 @@ namespace Owin
         /// <param name="getFromCache">May be null unless doing artifact binding, this function will be called for artifact resolution</param>
         public SamlLoginHandler(SamlAuthenticationOptions options)
         {
-            if (options == null) throw new ArgumentNullException("options");
+            if (options == null) throw new ArgumentNullException(nameof(options));
             this.options = options;
             configuration = options.Configuration;
             getFromCache = options.GetFromCache;

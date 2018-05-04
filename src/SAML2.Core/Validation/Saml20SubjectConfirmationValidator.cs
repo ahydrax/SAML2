@@ -33,7 +33,7 @@ namespace SAML2.Validation
         {
             if (subjectConfirmation == null)
             {
-                throw new ArgumentNullException("subjectConfirmation");
+                throw new ArgumentNullException(nameof(subjectConfirmation));
             }
 
             if (!Saml20Utils.ValidateRequiredString(subjectConfirmation.Method))
