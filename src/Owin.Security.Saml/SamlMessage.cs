@@ -1,12 +1,12 @@
 ﻿using System;
-using Microsoft.Owin;
-using SAML2.Utils;
 using System.Collections.Specialized;
-using SAML2.Config;
+using Microsoft.IdentityModel.Protocols;
+using Microsoft.Owin;
 using SAML2;
 using SAML2.Bindings;
+using SAML2.Config;
 using SAML2.Protocol;
-using Microsoft.IdentityModel.Protocols;
+using SAML2.Utils;
 
 namespace Owin.Security.Saml
 {

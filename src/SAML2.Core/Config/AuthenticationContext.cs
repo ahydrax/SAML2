@@ -1,6 +1,4 @@
-﻿using System.Configuration;
-
-namespace SAML2.Config
+﻿namespace SAML2.Config
 {
     /// <summary>
     /// Authentication Context configuration element.

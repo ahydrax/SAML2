@@ -1,13 +1,10 @@
-﻿using System.Configuration;
-
-namespace SAML2.Config
+﻿namespace SAML2.Config
 {
     /// <summary>
     /// Contact configuration element.
     /// </summary>
     public class Contact
     {
-
         /// <summary>
         /// Gets or sets the company.
         /// </summary>
@@ -47,10 +44,6 @@ namespace SAML2.Config
         /// <summary>
         /// Gets the element key.
         /// </summary>
-        public object ElementKey
-        {
-            get { return Type; }
-        }
-
+        public object ElementKey => Type;
     }
 }

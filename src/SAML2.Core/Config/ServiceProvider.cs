@@ -1,12 +1,11 @@
-﻿using System.Configuration;
-using System.Security.Cryptography.X509Certificates;
+﻿using System.Security.Cryptography.X509Certificates;
 
 namespace SAML2.Config
 {
     /// <summary>
     /// ServiceProvider configuration element.
     /// </summary>
-    public class ServiceProvider 
+    public class ServiceProvider
     {
 
         /// <summary>
@@ -26,8 +25,7 @@ namespace SAML2.Config
         /// Gets or sets the authentication contexts.
         /// </summary>
         /// <value>The authentication contexts.</value>
-        public AuthenticationContexts AuthenticationContexts
-        { get; set; }
+        public AuthenticationContexts AuthenticationContexts { get; set; }
 
         /// <summary>
         /// Gets or sets the endpoints.
@@ -46,7 +44,6 @@ namespace SAML2.Config
         /// </summary>
         /// <value>The signing certificate.</value>
         public X509Certificate2 SigningCertificate { get; set; }
-
 
         public ServiceProvider()
         {

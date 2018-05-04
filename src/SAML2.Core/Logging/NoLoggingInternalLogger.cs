@@ -10,42 +10,27 @@ namespace SAML2.Logging
         /// <summary>
         /// Gets a value indicating whether this instance is debug enabled.
         /// </summary>
-        public bool IsDebugEnabled
-        {
-            get { return false; }
-        }
-        
+        public bool IsDebugEnabled => false;
+
         /// <summary>
         /// Gets a value indicating whether this instance is error enabled.
         /// </summary>
-        public bool IsErrorEnabled
-        {
-            get { return false; }
-        }
+        public bool IsErrorEnabled => false;
 
         /// <summary>
         /// Gets a value indicating whether this instance is fatal enabled.
         /// </summary>
-        public bool IsFatalEnabled
-        {
-            get { return false; }
-        }
+        public bool IsFatalEnabled => false;
 
         /// <summary>
         /// Gets a value indicating whether this instance is info enabled.
         /// </summary>
-        public bool IsInfoEnabled
-        {
-            get { return false; }
-        }
+        public bool IsInfoEnabled => false;
 
         /// <summary>
         /// Gets a value indicating whether this instance is warn enabled.
         /// </summary>
-        public bool IsWarnEnabled
-        {
-            get { return false; }
-        }
+        public bool IsWarnEnabled => false;
 
         /// <summary>
         /// Logs specified debug message.
@@ -72,7 +57,7 @@ namespace SAML2.Logging
         public void DebugFormat(string format, params object[] args)
         {
         }
-        
+
         /// <summary>
         /// Logs specified error message.
         /// </summary>
@@ -95,26 +80,20 @@ namespace SAML2.Logging
         /// </summary>
         /// <param name="format">The format.</param>
         /// <param name="args">The args.</param>
-        public void ErrorFormat(string format, params object[] args)
-        {
-        }
+        public void ErrorFormat(string format, params object[] args) { }
 
         /// <summary>
         /// Logs specified fatal error message.
         /// </summary>
         /// <param name="message">The message.</param>
-        public void Fatal(object message)
-        {
-        }
+        public void Fatal(object message) { }
 
         /// <summary>
         /// Logs specified fatal error message.
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="exception">The exception.</param>
-        public void Fatal(object message, Exception exception)
-        {
-        }
+        public void Fatal(object message, Exception exception) { }
 
         /// <summary>
         /// Logs specified info message.

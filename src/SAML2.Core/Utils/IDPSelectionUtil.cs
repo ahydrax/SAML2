@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using SAML2.Services;
 
 namespace SAML2.Utils
 {
@@ -13,7 +14,7 @@ namespace SAML2.Utils
     /// </summary>
     /// <param name="ep">List of configured endpoints</param>
     /// <returns>The <see cref="IdentityProviderEndpoint"/> for the IDP that should be used for authentication</returns>
-    public delegate IdentityProvider IdpSelectionEventHandler(IdentityProviders ep);
+    public delegate IdentityProvider IdpSelectionEventHandler(IIdentityProvidersSource ep);
 
     /// <summary>
     /// Contains helper functionality for selection of IDP when more than one is configured
@@ -55,7 +56,7 @@ namespace SAML2.Utils
         /// </summary>
         /// <param name="endpoints">The endpoints.</param>
         /// <returns>The <see cref="IdentityProvider"/>.</returns>
-        public static IdentityProvider InvokeIDPSelectionEventHandler(IdentityProviders endpoints)
+        public static IdentityProvider InvokeIDPSelectionEventHandler(IIdentityProvidersSource endpoints)
         {
             return IdpSelectionEvent != null ? IdpSelectionEvent(endpoints) : null;
         }
@@ -67,7 +68,7 @@ namespace SAML2.Utils
         /// <returns>The <see cref="IdentityProvider"/>.</returns>
         public static IdentityProvider RetrieveIDPConfiguration(string idpId, Saml2Configuration config)
         {
-            return config.IdentityProviders.FirstOrDefault(x => x.Id == idpId);
+            return config.IdentityProvidersSource.GetById(idpId);
         }
 
         /// <summary>
@@ -82,7 +83,7 @@ namespace SAML2.Utils
             // If idpChoice is set, use it value
             if (!string.IsNullOrEmpty(allparams[IdpChoiceParameterName])) {
                 logger.DebugFormat(TraceMessages.IdentityProviderRetreivedFromQueryString, allparams[IdpChoiceParameterName]);
-                var endPoint = config.IdentityProviders.FirstOrDefault(x => x.Id == allparams[IdpChoiceParameterName]);
+                var endPoint = config.IdentityProvidersSource.GetById(allparams[IdpChoiceParameterName]);
                 if (endPoint != null) {
                     return endPoint;
                 }
@@ -93,7 +94,7 @@ namespace SAML2.Utils
             if (!string.IsNullOrEmpty(queryString["_saml_idp"])) {
                 var cdc = new Protocol.CommonDomainCookie(queryString["_saml_idp"]);
                 if (cdc.IsSet) {
-                    var endPoint = config.IdentityProviders.FirstOrDefault(x => x.Id == cdc.PreferredIDP);
+                    var endPoint = config.IdentityProvidersSource.GetById(cdc.PreferredIDP);
                     if (endPoint != null) {
                         logger.DebugFormat(TraceMessages.IdentityProviderRetreivedFromCommonDomainCookie, cdc.PreferredIDP);
                         return endPoint;
@@ -104,27 +105,29 @@ namespace SAML2.Utils
             }
 
             // If there is only one configured IdentityProviderEndpointElement lets just use that
-            if (config.IdentityProviders.Count == 1 && config.IdentityProviders[0].Metadata != null) {
-                logger.DebugFormat(TraceMessages.IdentityProviderRetreivedFromDefault, config.IdentityProviders[0].Name);
-                return config.IdentityProviders[0];
+            if (config.IdentityProvidersSource.GetAll().Any())
+            {
+                var idp = config.IdentityProvidersSource.GetAll().First();
+                logger.DebugFormat(TraceMessages.IdentityProviderRetreivedFromDefault, idp.Name);
+                return idp;
             }
 
             // If one of the endpoints are marked with default, use that one
-            var defaultIDP = config.IdentityProviders.FirstOrDefault(idp => idp.Default);
+            var defaultIDP = config.IdentityProvidersSource.GetAll().FirstOrDefault(idp => idp.Default);
             if (defaultIDP != null) {
                 logger.DebugFormat(TraceMessages.IdentityProviderRetreivedFromDefault, defaultIDP.Id);
                 return defaultIDP;
             }
 
             // In case an IDP selection url has been configured, redirect to that one.
-            if (!string.IsNullOrEmpty(config.IdentityProviders.SelectionUrl)) {
-                logger.DebugFormat(TraceMessages.IdentityProviderRetreivedFromSelection, config.IdentityProviders.SelectionUrl);
-                redirectToSelection(config.IdentityProviders.SelectionUrl);
+            if (!string.IsNullOrEmpty(config.IdentityProvidersSource.SelectionUrl)) {
+                logger.DebugFormat(TraceMessages.IdentityProviderRetreivedFromSelection, config.IdentityProvidersSource.SelectionUrl);
+                redirectToSelection(config.IdentityProvidersSource.SelectionUrl);
                 return null;
             }
 
             // If an IDPSelectionEvent handler is present, request the handler for an IDP endpoint to use.
-            return IdpSelectionUtil.InvokeIDPSelectionEventHandler(config.IdentityProviders);
+            return IdpSelectionUtil.InvokeIDPSelectionEventHandler(config.IdentityProvidersSource);
         }
 
         /// <summary>

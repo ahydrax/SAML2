@@ -26,7 +26,7 @@ namespace SAML2.Protocol.Pages
 
             var config = ConfigurationFactory.Instance.Configuration;
 
-            foreach (var endPoint in config.IdentityProviders)
+            foreach (var endPoint in config.IdentityProvidersSource.GetAll())
             {
                 if (endPoint.Metadata != null)
                 {

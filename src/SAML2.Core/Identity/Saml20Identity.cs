@@ -19,7 +19,7 @@ namespace SAML2.Identity
     /// </para>
     /// </summary>
     [Serializable]
-    public class Saml20Identity : GenericIdentity, ISaml20Identity 
+    public class Saml20Identity : GenericIdentity, ISaml20Identity
     {
         /// <summary>
         /// The attributes.
@@ -32,7 +32,7 @@ namespace SAML2.Identity
         /// <param name="name">The name.</param>
         /// <param name="attributes">The attributes.</param>
         /// <param name="persistentPseudonym">The persistent pseudonym.</param>
-        public Saml20Identity(string name, ICollection<SamlAttribute> attributes, string persistentPseudonym) 
+        public Saml20Identity(string name, ICollection<SamlAttribute> attributes, string persistentPseudonym)
             : base(name, Saml20Constants.Assertion)
         {
             PersistentPseudonym = persistentPseudonym;
@@ -63,22 +63,15 @@ namespace SAML2.Identity
         /// <param name="attributeName">The attribute name.</param>
         /// <returns>List of <see cref="SamlAttribute"/>.</returns>
         /// <exception cref="KeyNotFoundException">If the identity instance does not have the requested attribute.</exception>
-        public List<SamlAttribute> this[string attributeName]
-        {
-            get { return _attributes[attributeName]; }
-        }
-
+        public List<SamlAttribute> this[string attributeName] => _attributes[attributeName];
 
         /// <summary>
         /// Returns an enumerator that iterates through a collection.
         /// </summary>
         /// <returns>
-        /// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
+        /// An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.
         /// </returns>
-        public IEnumerator GetEnumerator()
-        {
-            return ((IEnumerable<SamlAttribute>)this).GetEnumerator();
-        }
+        public IEnumerator GetEnumerator() => ((IEnumerable<SamlAttribute>)this).GetEnumerator();
 
         /// <summary>
         /// Check if the identity contains a certain attribute.
@@ -125,7 +118,7 @@ namespace SAML2.Identity
             }
 
             // Create identity
-            var identity = new Saml20Identity(subjectIdentifier, assertion.Attributes, isPersistentPseudonym ? assertion.Subject.Value : null);                        
+            var identity = new Saml20Identity(subjectIdentifier, assertion.Attributes, isPersistentPseudonym ? assertion.Subject.Value : null);
 
             return new GenericPrincipal(identity, new string[] { });
         }

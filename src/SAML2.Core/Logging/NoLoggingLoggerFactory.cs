@@ -15,19 +15,13 @@
         /// </summary>
         /// <param name="keyName">Name of the key.</param>
         /// <returns>An <see cref="IInternalLogger"/> implementation.</returns>
-        public IInternalLogger LoggerFor(string keyName)
-        {
-            return NoLogging;
-        }
+        public IInternalLogger LoggerFor(string keyName) => NoLogging;
 
         /// <summary>
         /// Gets a logger for specified type.
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns>An <see cref="IInternalLogger"/> implementation.</returns>
-        public IInternalLogger LoggerFor(System.Type type)
-        {
-            return NoLogging;
-        }
+        public IInternalLogger LoggerFor(System.Type type) => NoLogging;
     }
 }

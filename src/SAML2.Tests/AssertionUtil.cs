@@ -234,7 +234,7 @@ namespace SAML2.Tests
             // TODO: Mock out a config for this test
             SAML2.Config.Saml2Configuration config = TestConfiguration.Configuration; // Saml2Config.GetConfig(); 
 
-            var idpEndpoint = config.IdentityProviders.FirstOrDefault(x => x.Id == issuer);
+            var idpEndpoint = config.IdentityProvidersSource.GetById(issuer);
             if (idpEndpoint == null)
             {
                 throw new InvalidOperationException(string.Format("No idp endpoint found for issuer {0}", issuer));

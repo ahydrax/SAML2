@@ -25,7 +25,9 @@ namespace SelfHostOwinSPExample.Metadata_MtUAT
                 new ServiceProviderEndpoint(EndpointType.Logout, "/identity/logout", "/identity", BindingType.Redirect),
                 new ServiceProviderEndpoint(EndpointType.Metadata, "/identity/metadata")
             });
-            myconfig.IdentityProviders.AddByMetadata("..\\..\\Metadata-Test\\uat.xml");
+            var idpSource = new IdentityProviders();
+            idpSource.AddByMetadata("..\\..\\Metadata-Test\\uat.xml");
+            myconfig.IdentityProvidersSource = idpSource;
             SAML2.Logging.LoggerProvider.Configuration = myconfig;
             return myconfig;
         }

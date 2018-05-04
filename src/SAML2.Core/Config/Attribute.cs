@@ -1,13 +1,10 @@
-﻿using System.Configuration;
-
-namespace SAML2.Config
+﻿namespace SAML2.Config
 {
     /// <summary>
     /// Attribute configuration element.
     /// </summary>
     public class Attribute
     {
-
         /// <summary>
         /// Gets or sets a value indicating whether this attribute is required.
         /// </summary>

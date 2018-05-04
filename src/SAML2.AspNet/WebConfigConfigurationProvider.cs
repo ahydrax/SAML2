@@ -25,7 +25,7 @@ namespace SAML2.AspNet
                 AllowedAudienceUris = _config.AllowedAudienceUris.Select(u => ToAllowedAudienceUri(u)).ToList(),
                 AssertionProfileValidator = _config.AssertionProfile.AssertionValidator,
                 CommonDomainCookie = ToCommonDomainCookie(_config.CommonDomainCookie),
-                IdentityProviders = ToIdentityProviders(_config.IdentityProviders.Select(i => ToIdentityProvider(i)), _config.IdentityProviders),
+                IdentityProvidersSource = ToIdentityProviders(_config.IdentityProviders.Select(i => ToIdentityProvider(i)), _config.IdentityProviders),
                 LoggingFactoryType = _config.Logging.LoggingFactory,
                 Metadata = ToMetadata(_config.Metadata),
                 ServiceProvider = ToServiceProvider(_config.ServiceProvider)

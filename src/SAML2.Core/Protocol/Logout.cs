@@ -1,13 +1,9 @@
-﻿using SAML2.Bindings;
+﻿using System;
+using SAML2.Bindings;
+using SAML2.Config;
 using SAML2.Logging;
 using SAML2.Schema.Protocol;
 using SAML2.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SAML2.Config;
 
 namespace SAML2.Protocol
 {

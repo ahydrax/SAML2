@@ -1,6 +1,4 @@
-﻿using System.Configuration;
-
-namespace SAML2.Config
+﻿namespace SAML2.Config
 {
     /// <summary>
     /// Organization configuration element.
@@ -12,6 +10,7 @@ namespace SAML2.Config
         /// </summary>
         /// <value>The display name.</value>
         public string DisplayName { get; set; }
+
         /// <summary>
         /// Gets or sets the name.
         /// </summary>

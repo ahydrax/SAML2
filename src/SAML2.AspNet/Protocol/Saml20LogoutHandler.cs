@@ -255,7 +255,7 @@ namespace SAML2.Protocol
                 var parser = new HttpRedirectBindingParser(context.Request.Url);
                 Logger.DebugFormat(TraceMessages.LogoutRequestRedirectBindingParse, parser.Message, parser.SignatureAlgorithm, parser.Signature);
 
-                var endpoint = config.IdentityProviders.FirstOrDefault(x => x.Id == idp.Id);
+                var endpoint = config.IdentityProvidersSource.GetById(idp.Id);
                 if (endpoint == null || endpoint.Metadata == null)
                 {
                     Logger.ErrorFormat(ErrorMessages.UnknownIdentityProvider, idp.Id);
@@ -283,7 +283,7 @@ namespace SAML2.Protocol
                     throw new Saml20Exception(ErrorMessages.RequestSignatureMissing);
                 }
 
-                var endpoint = config.IdentityProviders.FirstOrDefault(x => x.Id == idp.Id);
+                var endpoint = config.IdentityProvidersSource.GetById(idp.Id);
                 if (endpoint == null || endpoint.Metadata == null)
                 {
                     Logger.ErrorFormat(ErrorMessages.UnknownIdentityProvider, idp.Id);

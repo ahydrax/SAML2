@@ -16,8 +16,6 @@ namespace SAML2.Bindings
         private readonly Action<string> redirect;
         private readonly Action<string> sendResponseMessage;
 
-
-
         /// <summary>
         /// Initializes a new instance of the <see cref="HttpArtifactBindingBuilder"/> class.
         /// </summary>
@@ -28,7 +26,7 @@ namespace SAML2.Bindings
         {
             if (config == null) throw new ArgumentNullException("config");
             if (redirect == null) throw new ArgumentNullException("redirect");
-            if (sendResponseMessage == null) throw new ArgumentNullException("sendResponseMessage"); 
+            if (sendResponseMessage == null) throw new ArgumentNullException("sendResponseMessage");
             this.redirect = redirect;
             this.config = config;
             this.sendResponseMessage = sendResponseMessage;
@@ -96,7 +94,7 @@ namespace SAML2.Bindings
             var endpointUrl = idpEndPoint.Metadata.GetIDPARSEndpoint(endpointIndex);
 
             Logger.DebugFormat(TraceMessages.ArtifactResolveForKnownIdentityProvider, artifact, idpEndPoint.Id, endpointUrl);
-            
+
             var resolve = Saml20ArtifactResolve.GetDefault(config.ServiceProvider.Id);
             resolve.Artifact = artifact;
 
@@ -201,7 +199,7 @@ namespace SAML2.Bindings
 
             if (ArtifactUtil.TryParseArtifact(artifact, ref typeCodeValue, ref endPointIndex, ref sourceIdHash, ref messageHandle))
             {
-                foreach (IdentityProvider ep in config.IdentityProviders)
+                foreach (IdentityProvider ep in config.IdentityProvidersSource.GetAll())
                 {
                     var hash = ArtifactUtil.GenerateSourceIdHash(ep.Id);
                     if (ByteArraysAreEqual(sourceIdHash, hash))
@@ -210,7 +208,7 @@ namespace SAML2.Bindings
                     }
                 }
             }
-            
+
             return null;
         }
     }

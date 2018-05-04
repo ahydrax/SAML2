@@ -59,9 +59,12 @@ namespace SelfHostOwinSPExample
                 new ServiceProviderEndpoint(EndpointType.Logout, "/core/saml2/logout", "/core"),
                 new ServiceProviderEndpoint(EndpointType.Metadata, "/core/saml2/metadata")
             });
-            myconfig.IdentityProviders.AddByMetadataDirectory("..\\..\\Metadata");
+            var idpSource = new IdentityProviders();
+
+            idpSource.AddByMetadataDirectory("..\\..\\Metadata");
             //myconfig.IdentityProviders.AddByMetadataUrl(new Uri("https://tas.fhict.nl/identity/saml2/metadata"));
-            myconfig.IdentityProviders.First().OmitAssertionSignatureCheck = true;
+            idpSource.First().OmitAssertionSignatureCheck = true;
+            myconfig.IdentityProvidersSource = idpSource;
             myconfig.LoggingFactoryType = "SAML2.Logging.DebugLoggerFactory";
             return myconfig;
         }

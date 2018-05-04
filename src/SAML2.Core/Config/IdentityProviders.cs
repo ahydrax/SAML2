@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Xml;
 using SAML2.Schema.Metadata;
+using SAML2.Services;
 using SAML2.Utils;
 
 namespace SAML2.Config
@@ -14,7 +15,7 @@ namespace SAML2.Config
     /// Identity Provider configuration collection.
     /// </summary>
     //[ConfigurationCollection(typeof(IdentityProviderElement), CollectionType = ConfigurationElementCollectionType.AddRemoveClearMap)]
-    public class IdentityProviders : List<IdentityProvider>
+    public class IdentityProviders : List<IdentityProvider>, IIdentityProvidersSource
     {
         /// <summary>
         /// A list of the files that have currently been loaded. The filename is used as key, while last seen modification time is used as value.
@@ -37,18 +38,19 @@ namespace SAML2.Config
             _fileInfo = new Dictionary<string, DateTime>();
         }
 
-
-
         /// <summary>
         /// Gets or sets the encodings.
         /// </summary>
         public string Encodings { get; set; }
 
-
         /// <summary>
         /// Gets the selection URL to use for choosing identity providers if multiple are available and none are set as default.
         /// </summary>
         public string SelectionUrl { get; set; }
+
+        public IdentityProvider GetById(string id) => Find(x => x.Id == id);
+
+        public IEnumerable<IdentityProvider> GetAll() => this;
 
         public void AddByMetadataUrl(Uri url)
         {
@@ -56,8 +58,10 @@ namespace SAML2.Config
             // It may be more efficient to pass the stream directly, but
             // it's likely a bit safer to pull the data off the response
             // stream and create a new memorystream with the data
-            using (var ms = new MemoryStream()) {
-                using (var response = request.GetResponse().GetResponseStream()) {
+            using (var ms = new MemoryStream())
+            {
+                using (var response = request.GetResponse().GetResponseStream())
+                {
                     response.CopyTo(ms);
                     response.Close();
                 }
@@ -75,18 +79,21 @@ namespace SAML2.Config
 
         public void AddByMetadata(params string[] files)
         {
-            foreach (var file in files) {
+            foreach (var file in files)
+            {
                 TryAddByMetadata(file); // ignore errors
             }
         }
         public bool TryAddByMetadata(string file)
         {
-            try {
+            try
+            {
                 var metadataDoc = new Saml20MetadataDocument(file, GetEncodings());
                 AdjustIdpListWithNewMetadata(metadataDoc);
                 return true;
             }
-            catch (Exception) {
+            catch (Exception)
+            {
                 return false;
             }
         }
@@ -94,7 +101,8 @@ namespace SAML2.Config
         private void AdjustIdpListWithNewMetadata(Saml20MetadataDocument metadataDoc)
         {
             var endp = this.FirstOrDefault(x => x.Id == metadataDoc.EntityId);
-            if (endp == null) {
+            if (endp == null)
+            {
                 // If the endpoint does not exist, create it.
                 endp = new IdentityProvider();
                 Add(endp);
@@ -114,7 +122,7 @@ namespace SAML2.Config
         internal IEnumerable<Encoding> GetEncodings()
         {
             var rc = string.IsNullOrEmpty(Encodings)
-                                  ? new [] { Encoding.UTF8, Encoding.GetEncoding("iso-8859-1") }
+                                  ? new[] { Encoding.UTF8, Encoding.GetEncoding("iso-8859-1") }
                                   : Encodings.Split(' ').Select(Encoding.GetEncoding);
 
             return rc;

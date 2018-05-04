@@ -151,6 +151,7 @@
     <Compile Include="Schema\Core\SubjectLocality.cs" />
     <Compile Include="Schema\Metadata\AdditionalMetadataLocation.cs" />
     <Compile Include="Schema\Metadata\AffiliationDescriptor.cs" />
+    <Compile Include="Schema\Metadata\ApplicationServiceType.cs" />
     <Compile Include="Schema\Metadata\AttributeAuthorityDescriptor.cs" />
     <Compile Include="Schema\Metadata\AttributeConsumingService.cs" />
     <Compile Include="Schema\Metadata\AuthnAuthorityDescriptor.cs" />
@@ -240,6 +241,7 @@
     <Compile Include="Schema\XmlDSig\X509Data.cs" />
     <Compile Include="Schema\XmlDSig\X509IssuerSerial.cs" />
     <Compile Include="Schema\XmlDSig\X509ItemType.cs" />
+    <Compile Include="Services\IIdentityProvidersSource.cs" />
     <Compile Include="Specification\DefaultCertificateSpecification.cs" />
     <Compile Include="Specification\ICertificateSpecification.cs" />
     <Compile Include="Specification\SelfIssuedCertificateSpecification.cs" />
@@ -300,4 +302,7 @@
   </Target>
   -->
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy $(TargetPath) "C:\Source\e-assessment\app\EAssessment\EAssessment.Web.Api\Dependencies" /Y</PostBuildEvent>
+  </PropertyGroup>
 </Project>

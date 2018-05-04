@@ -55,8 +55,10 @@ namespace SAML2.Tests
             // Assert
             // Go through the children and look for the EncryptionMethod element, and verify its algorithm attribute.
             var encryptionMethodFound = false;
-            foreach (XmlNode node in encryptedAssertionXml.GetElementsByTagName(Schema.XEnc.EncryptedData.ElementName, Saml20Constants.Xenc)[0].ChildNodes) {
-                if (node.LocalName == Schema.XEnc.EncryptionMethod.ElementName && node.NamespaceURI == Saml20Constants.Xenc) {
+            foreach (XmlNode node in encryptedAssertionXml.GetElementsByTagName(Schema.XEnc.EncryptedData.ElementName, Saml20Constants.Xenc)[0].ChildNodes)
+            {
+                if (node.LocalName == Schema.XEnc.EncryptionMethod.ElementName && node.NamespaceURI == Saml20Constants.Xenc)
+                {
                     var element = (XmlElement)node;
                     Assert.AreEqual(EncryptedXml.XmlEncAES128Url, element.GetAttribute("Algorithm"));
                     encryptionMethodFound = true;
@@ -206,13 +208,14 @@ namespace SAML2.Tests
                 var encryptedList = doc.GetElementsByTagName(EncryptedAssertion.ElementName, Saml20Constants.Assertion);
 
                 // Do some mock configuration.
+                var idpSource = new IdentityProviders();
                 var config = new Saml2Configuration
                 {
                     AllowedAudienceUris = new System.Collections.Generic.List<Uri>(),
-                    IdentityProviders = new IdentityProviders()
+                    IdentityProvidersSource = idpSource
                 };
                 config.AllowedAudienceUris.Add(new Uri("https://saml.safewhere.net"));
-                config.IdentityProviders.AddByMetadataDirectory(@"Protocol\MetadataDocs\FOBS"); // Set it manually.     
+                idpSource.AddByMetadataDirectory(@"Protocol\MetadataDocs\FOBS"); // Set it manually.
 
                 var cert = new X509Certificate2(@"Certificates\SafewhereTest_SFS.pfx", "test1234");
                 var encryptedAssertion = new Saml20EncryptedAssertion((RSA)cert.PrivateKey);
@@ -224,18 +227,20 @@ namespace SAML2.Tests
 
                 // Retrieve metadata
                 var assertion = new Saml20Assertion(encryptedAssertion.Assertion.DocumentElement, null, false, TestConfiguration.Configuration);
-                var endp = config.IdentityProviders.FirstOrDefault(x => x.Id == assertion.Issuer);
+                var endp = config.IdentityProvidersSource.GetById(assertion.Issuer);
 
                 // Assert
                 Assert.That(encryptedList.Count == 1);
                 Assert.IsNotNull(endp, "Endpoint not found");
                 Assert.IsNotNull(endp.Metadata, "Metadata not found");
 
-                try {
+                try
+                {
                     assertion.CheckValid(AssertionUtil.GetTrustedSigners(assertion.Issuer));
                     Assert.Fail("Verification should fail. Token does not include its signing key.");
                 }
-                catch (InvalidOperationException) {
+                catch (InvalidOperationException)
+                {
                 }
 
                 Assert.IsNull(assertion.SigningKey, "Signing key is already present on assertion. Modify test.");

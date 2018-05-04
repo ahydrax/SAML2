@@ -59,7 +59,7 @@ namespace SAML2
 
             var config = ConfigurationFactory.Instance.Configuration;
 
-            var identityProviders = config.IdentityProviders;
+            var identityProviders = config.IdentityProvidersSource;
 
             // This is a neat feature but I'm not sure about the security ramifications of the app having write
             // access to the metadata directory or automatically gathering metadata for a provider.

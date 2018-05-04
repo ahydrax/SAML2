@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Configuration;
+﻿using System;
+using System.Collections.Generic;
+using SAML2.Services;
 
 namespace SAML2.Config
 {
@@ -11,19 +12,20 @@ namespace SAML2.Config
         /// <summary>
         /// Gets the section name.
         /// </summary>
-        public static string Name { get { return "saml2"; } }
+        public static string Name => "saml2";
 
         /// <summary>
         /// Gets or sets the allowed audience uris.
         /// </summary>
         /// <value>The allowed audience uris.</value>
-        public List<System.Uri> AllowedAudienceUris { get; set; }
+        public List<Uri> AllowedAudienceUris { get; set; }
 
         /// <summary>
         /// Gets or sets the assertion profile.
         /// </summary>
         /// <value>The assertion profile configuration.</value>
         public string AssertionProfileValidator { get; set; }
+
         /// <summary>
         /// Gets or sets the common domain cookie configuration.
         /// </summary>
@@ -31,10 +33,11 @@ namespace SAML2.Config
         public CommonDomainCookie CommonDomainCookie { get; set; }
 
         /// <summary>
-        /// Gets or sets the identity providers.
+        /// Gets or sets the identity providers source.
         /// </summary>
-        /// <value>The identity providers.</value>
-        public IdentityProviders IdentityProviders { get; set; }
+        /// <value>The identity providers source.</value>
+        public IIdentityProvidersSource IdentityProvidersSource { get; set; }
+
         /// <summary>
         /// Gets or sets the logging configuration.
         /// </summary>
@@ -52,13 +55,5 @@ namespace SAML2.Config
         /// </summary>
         /// <value>The service provider.</value>
         public ServiceProvider ServiceProvider { get; set; }
-
-        public Saml2Configuration()
-        {
-            IdentityProviders = new IdentityProviders();
-            AllowedAudienceUris = new List<System.Uri>();
-            Metadata = new Metadata();
-        }
-
     }
 }

@@ -41,7 +41,7 @@ namespace SAML2.Bindings
                 throw new ArgumentOutOfRangeException("config", ErrorMessages.ConfigSigningCertificateMissingPrivateKey);
             }
 
-            if (config.IdentityProviders == null)
+            if (config.IdentityProvidersSource == null)
             {
                 throw new ArgumentOutOfRangeException("config", ErrorMessages.ConfigMissingIdentityProvidersElement);
             }

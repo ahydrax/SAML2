@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Configuration;
 
 namespace SAML2.Config
 {
@@ -9,7 +8,9 @@ namespace SAML2.Config
     public class AuthenticationContexts : List<AuthenticationContext>
     {
         public AuthenticationContexts() : base() { }
+
         public AuthenticationContexts(IEnumerable<AuthenticationContext> collection) : base(collection) { }
+
         /// <summary>
         /// Gets the comparison.
         /// </summary>
